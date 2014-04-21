@@ -4,9 +4,13 @@ APP="$1"
 IMAGE="dokku/$APP"
 
 read -d '' runner <<'EOF'
-profile_dir=/app/.profile.d &&
-cp \$profile_dir/app-env.sh \$profile_dir/\~app-env.sh &&
-chmod +x \$profile_dir/\~app-env.sh
+profile_dir=/app/.profile.d;
+from=\$profile_dir/app-env.sh;
+to=\$profile_dir/\~app-env.sh;
+if [[ -f \$from ]]; then
+  cp \$from \$to;
+  chmod +x \$to;
+fi
 EOF
 
 set -e
