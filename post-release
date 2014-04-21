@@ -1,0 +1,17 @@
+#!/bin/bash
+
+APP="$1"
+IMAGE="dokku/$APP"
+
+read -d '' runner <<'EOF'
+profile_dir=/app/.profile.d &&
+cp \$profile_dir/app-env.sh \$profile_dir/\~app-env.sh &&
+chmod +x \$profile_dir/\~app-env.sh
+EOF
+
+set -e
+
+echo "-----> Adding priotized app-env.sh ..."
+id=$(echo $runner | docker run -i -a stdin $IMAGE /bin/bash -)
+test $(docker wait $id) -eq 0
+docker commit $id $IMAGE > /dev/null
